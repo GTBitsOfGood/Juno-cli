@@ -14,5 +14,8 @@ yargs(hideBin(process.argv))
             console.log('Hello, world!');
         }
     })
+    .demandCommand(1, 'Please enter a command')
+    .strict()
+    .showHelpOnFail(true)
     .parse();
 
