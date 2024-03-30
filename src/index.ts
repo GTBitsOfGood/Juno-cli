@@ -1,6 +1,9 @@
 import yargs, { Argv } from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { CommandArg, ParsedCommandArgProperties, Subcommand } from './cli';
+import { UserApi } from 'juno-sdk';
+
+const userApi = new UserApi('http://localhost:63107');
 
 const userSubcommands: Subcommand = {
   auth: {
@@ -85,9 +88,7 @@ const userSubcommands: Subcommand = {
       create: {
         describe: 'Create a user',
         type: 'string',
-        handler: (argv) => {
-          console.log('Creating user...');
-        },
+        handler: (argv) => {}
       },
       setType: {
         describe: 'Set user type',
@@ -99,9 +100,30 @@ const userSubcommands: Subcommand = {
       link: {
         describe: 'Link a user to a project',
         type: 'string',
-        handler: (argv) => {
+        handler: async (argv) => {
           console.log('Linking user...');
+          try {
+            const res = await userApi.userControllerLinkUserWithProjectId(argv.userId, argv.projectName);
+            console.log("Project linked: " + JSON.stringify(res.body));
+          } catch (e){
+            console.error("Failed linking...");
+            throw e;
+          }
         },
+        args: {
+          userId: {
+            describe: 'User ID',
+            validator(arg) {
+                return !(Number.isNaN(Number(arg)));
+            },
+          },
+          projectName: {
+            describe: 'Project name to link',
+            validator(arg) {
+                return true;
+            },
+          },
+        }
       },
     },
   },
