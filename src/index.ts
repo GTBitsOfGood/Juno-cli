@@ -2,6 +2,17 @@ import yargs, { Argv } from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { CommandArg, ParsedCommandArgProperties, Subcommand } from './cli';
 
+import { UserApi } from 'juno-sdk';
+
+const setTypeOptions = [
+  "id",
+  "email",
+]
+
+const userApi = new UserApi();
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
 const userSubcommands: Subcommand = {
   auth: {
     describe: 'Run a Juno user auth command',
@@ -88,13 +99,56 @@ const userSubcommands: Subcommand = {
         handler: (argv) => {
           console.log('Creating user...');
         },
+
       },
       setType: {
         describe: 'Set user type',
         type: 'string',
         handler: (argv) => {
-          console.log('Setting user type...');
+
+
         },
+        subcommands: {
+          email: {
+            describe: "Modify the email address",
+            type: 'string',
+            handler: (argv) => {
+              const { id, email, type, emailInput } = argv;
+          
+              userApi.userControllerSetUserType({ email, id, type }, { headers: { email: emailInput } })
+              
+            },
+            args: {
+              email: {
+                describe: "Email input",
+                validator: (arg) => {
+                  const valid = emailRegex.test(arg);
+
+                  return valid;
+                }
+              },
+              id: {
+                describe: "User ID",
+                validator: (arg) => {
+                  return !Number.isNaN(arg);
+                }
+              },
+              newEmail: {
+                describe: "New email to be set",
+                validator: (arg) => {
+                  return emailRegex.test(arg);
+                }
+              },
+              type: {
+                describe: 'The type, e.g. ',
+                validator: (arg) => {
+                  return arg.length !== 0;
+                },
+              },
+            }
+          },
+          
+        }
       },
       link: {
         describe: 'Link a user to a project',
@@ -136,7 +190,7 @@ function buildCommands(yargs: Argv, commands: Subcommand, parentCommand = '') {
         buildCommandDescription(command.describe, command.args),
         (yargs) => {
           Object.entries(commandArgs).forEach(([name, arg]) => {
-            if (arg.type != 'string') throw new Error();
+            if (arg.type !== 'string') throw new Error();
             yargs.positional(name, {
               describe: arg.describe,
               type: arg.type,
