@@ -1,6 +1,7 @@
 import yargs, { Argv } from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { CommandArg, ParsedCommandArgProperties, Subcommand } from './cli';
+import { UserApi } from 'juno-sdk';
 
 const userSubcommands: Subcommand = {
   auth: {
@@ -78,15 +79,53 @@ const userSubcommands: Subcommand = {
       get: {
         describe: 'Get user information',
         type: 'string',
-        handler: (argv) => {
+        handler: async (argv) => {
+          const api = new UserApi('http://localhost:53986');
+          const user = await api.userControllerGetUserById(argv.id);
           console.log('Getting user information...');
+          console.log(user.body);
+        },
+        args: {
+          id: {
+            describe: 'Name of user',
+            validator: (arg) => {
+              return true;
+            },
+          },
         },
       },
       create: {
         describe: 'Create a user',
         type: 'string',
-        handler: (argv) => {
+        handler: async (argv) => {
+          const api = new UserApi('http://localhost:53986');
+          const user = await api.userControllerCreateUser({
+            name: argv.name,
+            email: argv.email,
+            password: argv.password,
+          });
           console.log('Creating user...');
+          console.log(user);
+        },
+        args: {
+          name: {
+            describe: 'Name of user',
+            validator: (arg) => {
+              return true;
+            },
+          },
+          email: {
+            describe: 'Email',
+            validator: (arg) => {
+              return true;
+            },
+          },
+          password: {
+            describe: 'Password',
+            validator: (arg) => {
+              return true;
+            },
+          },
         },
       },
       setType: {
