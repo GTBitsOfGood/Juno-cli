@@ -13,5 +13,6 @@
   },
   "scripts": {
     "build": "tsc"
-  }
+  },
+  "type": "commonjs"
 }
