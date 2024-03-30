@@ -4,7 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "yargs": "^17.7.2"
+    "yargs": "^17.7.2",
+    "juno-sdk": "file:../juno/sdk"
   },
   "devDependencies": {
     "@types/node": "^20.11.30",
