@@ -86,7 +86,28 @@ const userSubcommands: Subcommand = {
         describe: 'Create a user',
         type: 'string',
         handler: (argv) => {
+          console.log(argv);
           console.log('Creating user...');
+        },
+        args: {
+          email: {
+            describe: 'email of the user',
+            validator: (arg) => {
+              return true;
+            },
+          },
+          name: {
+            describe: 'name of the user',
+            validator: (arg) => {
+              return true;
+            },
+          },
+          password: {
+            describe: 'password of the user',
+            validator: (arg) => {
+              return true;
+            },
+          },
         },
       },
       setType: {
