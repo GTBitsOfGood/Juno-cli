@@ -25,7 +25,7 @@ const userSubcommands: Subcommand = {
           } = argv;
           const createApiKeyResponse = await api.authControllerCreateApiKey({
             headers: {
-              project: projectId || projectName,
+              project: projectId || projectName || undefined,
               email,
               password,
               description,
