@@ -1,6 +1,9 @@
 import yargs, { Argv } from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { CommandArg, ParsedCommandArgProperties, Subcommand } from './cli';
+import { DefaultApi } from 'juno-sdk';
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const userSubcommands: Subcommand = {
   auth: {
@@ -10,8 +13,75 @@ const userSubcommands: Subcommand = {
       key: {
         describe: 'Issue api key',
         type: 'string',
-        handler: (argv) => {
+        handler: async (argv) => {
+          const api = new DefaultApi('http://localhost:53986');
+          const {
+            projectId,
+            projectName,
+            email,
+            password,
+            description,
+            environment,
+          } = argv;
+          /*
+          Should be:
+          const createApiKeyResponse = await api.authControllerCreateApiKey({
+              project: {id: projectId, name: projectName},
+              email,
+              password,
+              description,
+              environment,
+          });
+          */
+          const createApiKeyResponse = await api.authControllerCreateApiKey({
+            headers: {
+              project: projectId || projectName || undefined,
+              email,
+              password,
+              description,
+              environment,
+            },
+          });
           console.log('Issuing API key...');
+          console.log(createApiKeyResponse);
+        },
+        args: {
+          projectId: {
+            describe: 'Project ID',
+            validator: (arg) => {
+              return !Number.isNaN(arg);
+            },
+          },
+          projectName: {
+            describe: 'Project Name',
+            validator: (arg) => {
+              return arg.length > 0;
+            },
+          },
+          email: {
+            describe: 'Email',
+            validator: (arg) => {
+              return emailRegex.test(arg);
+            },
+          },
+          password: {
+            describe: 'Password',
+            validator: (arg) => {
+              return arg.length > 0;
+            },
+          },
+          description: {
+            describe: 'API description',
+            validator: (arg) => {
+              return arg.length > 0;
+            },
+          },
+          environment: {
+            describe: 'API environment',
+            validator: (arg) => {
+              return arg.length > 0;
+            },
+          },
         },
       },
     },
