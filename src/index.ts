@@ -23,6 +23,16 @@ const userSubcommands: Subcommand = {
             description,
             environment,
           } = argv;
+          /*
+          Should be:
+          const createApiKeyResponse = await api.authControllerCreateApiKey({
+              project: {id: projectId, name: projectName},
+              email,
+              password,
+              description,
+              environment,
+          });
+          */
           const createApiKeyResponse = await api.authControllerCreateApiKey({
             headers: {
               project: projectId || projectName || undefined,
